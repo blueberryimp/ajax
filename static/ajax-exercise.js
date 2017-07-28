@@ -25,16 +25,18 @@ $('#get-fortune-button').on('click', showFortune);//we get the ID of
 
 
 // PART 2: SHOW WEATHER
-
-function showWeather() {
-    $.get('/weather-info.json')
-
+function showWeather(evt) {
     evt.preventDefault();
 
     var url = "/weather.json?zipcode=" + $("#zipcode-field").val();
 
-    // TODO: request weather with that URL and show the forecast in #weather-info
-    $('#weather-info').html(url);
+    $.get(url, function (results) {
+        $("#weather-info").html(results.forecast);
+    });
+}
+
+$("#weather-form").on('submit', showWeather);
+
 
 
 
@@ -50,10 +52,19 @@ $("#weather-form").on('submit', showWeather);
 function orderMelons(evt) {
     evt.preventDefault();
 
-    // TODO: show the result message after your form
-    // TODO: if the result code is ERROR, make it show up in red (see our CSS!)
+    var formInputs = $("#order-form").serialize();
+    $.post("/order-melons.json", formInputs, function (results) {
+        if (results.code == "OK") {
+            $('#order-status').html("<p>" + results.msg + "</p>");
+        }
+        else {
+            $('#order-status').addClass("order-error");
+            $('#order-status').html("<p><b>" + results.msg + "</b></p>");
+        }
+    });
 }
 
 $("#order-form").on('submit', orderMelons);
+
 
 
